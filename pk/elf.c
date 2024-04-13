@@ -85,7 +85,7 @@ void load_elf(const char *fn, elf_info *info)
   mkfifo(pythonWait, 0666); // Additional pipe to avoid races
 
   // Argument vector to be passed into child process.
-  char *childArgv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
+  char const *childArgv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
   
   // Fork child process to run python script
   int res;
@@ -105,6 +105,8 @@ void load_elf(const char *fn, elf_info *info)
   int minAddr;
   // Memory size of the next segment to be read.
   int memSize;
+  // Protection flags for a given segment.
+  int prot;
 
 
   // First value output by child process is entry point.
@@ -113,6 +115,7 @@ void load_elf(const char *fn, elf_info *info)
   fclose(fptr);
 
   info->entry = atoi(output);
+  memset(output, 0, sizeof output); // Empty buffer
 
   // Tell script to continue
   fptr = fopen(pythonWait, "w");
@@ -126,28 +129,39 @@ void load_elf(const char *fn, elf_info *info)
     if(!fgets(output, strLen, fptr)) goto fail;
     fclose(fptr);
 
+    // Read minimum address, memory size, and protection flags
     fptr = fopen(loader, "r");
+
     if(!fgets(output, strLen, fptr)) goto fail;
     minAddr = atoi(output);
+    memset(output, 0, sizeof output); // Empty buffer
+
     if(!fgets(output, strLen, fptr)) goto fail;
     memSize = atoi(output);
+    memset(output, 0, sizeof output); // Empty buffer
+
+    if(!fgets(output, strLen, fptr)) goto fail;
+    prot = atoi(output);
+    memset(output, 0, sizeof output); // Empty buffer
+
     fclose(fptr);
 
     // Update floor for red zone
     if (minAddr + mem_size > info->brk_min)
-        info->brk_min = minAddr + mem_size
+        info->brk_min = minAddr + mem_size;
 
-    // Tell script to continue and wait for it to finish.
+    // Tell script to load segment into memory and wait for it to finish.
     fptr = fopen(pythonWait, "w");
     puts(ready);
     fclose(fptr);
+
     fptr = fopen(PKWait, "r");
     if(!fgets(output, strLen, fptr)) goto fail;
     fclose(fptr);
 
     // Map filled file to memory
     file_t *loader_t = file_open(loader, O_RDONLY, 0); // Open loaded pipe
-    if (__do_mmap(minAddr, mem_size, prot | PROT_WRITE, flags2, loader_t, 0) != minAddr)
+    if (__do_mmap(minAddr, mem_size, prot | PROT_WRITE, prot, loader_t, 0) != minAddr)
         goto fail; // returns minAddr on success, goto fail otherwise.
     file_decref(loader_t);
 
