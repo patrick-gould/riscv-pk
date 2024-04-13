@@ -10,14 +10,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include "mmap.h"
-
-// Used to make a named pipe
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#include <unistd.h> // Used to spawn new process
+#include <unistd.h>
 
 /**
  * The protection flags are in the p_flags section of the program header.
