@@ -73,11 +73,11 @@ void load_elf(const char *fn, elf_info *info)
   // testScript.py is the script that starts and queries Angr to help dynamically load the program.
   
   // Pipe names and communication strings
-  const char* loader = "loader_pipe";
-  const char* PKWait = "PK_wait_pipe";
-  const char* pythonWait = "Python_wait_pipe";
-  const char* ready = "ready";
-  const char* terminate = "terminate";
+  char* loader = "loader_pipe";
+  char* PKWait = "PK_wait_pipe";
+  char* pythonWait = "Python_wait_pipe";
+  char* ready = "ready";
+  char* terminate = "terminate";
 
   // Open shared pipes
   mkfifo(loader, 0666); // 0666 is default permissions.
@@ -98,7 +98,7 @@ void load_elf(const char *fn, elf_info *info)
   // Points to the currently open pipe.
   FILE* fptr;
   // Max string length for any line. The number 255 is arbitrary.
-  int const strLen = 255;
+  const int strLen = 255;
   // Holds strings read from fifo pipe
   char output[strLen];
   // Minimum address of the next segment to be read.
