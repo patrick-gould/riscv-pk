@@ -85,7 +85,7 @@ void load_elf(const char *fn, elf_info *info)
   mkfifo(pythonWait, 0666); // Additional pipe to avoid races
 
   // Argument vector to be passed into child process.
-  char const *childArgv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
+  char * childArgv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
   
   // Fork child process to run python script
   int res;
@@ -98,7 +98,7 @@ void load_elf(const char *fn, elf_info *info)
   // Points to the currently open pipe.
   FILE* fptr;
   // Max string length for any line. The number 255 is arbitrary.
-  int strLen = 255;
+  int const strLen = 255;
   // Holds strings read from fifo pipe
   char output[strLen];
   // Minimum address of the next segment to be read.
