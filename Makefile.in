@@ -127,7 +127,7 @@ COMPILE       := $(CC) -MMD -MP $(CFLAGS) \
 #  - LIBS    : Library flags (eg. -l)
 
 LD            := $(CC)
-LDFLAGS       := @LDFLAGS@ -nostartfiles $(LDFLAGS) $(march) $(mabi) -fno-stack-protector
+LDFLAGS       := @LDFLAGS@ -nostartfiles -nostdlib -static $(LDFLAGS) $(march) $(mabi) -fno-stack-protector
 LIBS          := @LIBS@
 LINK          := $(LD) $(LDFLAGS)
 
