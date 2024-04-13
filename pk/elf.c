@@ -100,7 +100,7 @@ void load_elf(const char *fn, elf_info *info)
   // Max string length for any line. The number 255 is arbitrary.
   const int strLen = 255;
   // Holds strings read from fifo pipe
-  char output[strLen];
+  const char output[255];
   // Minimum address of the next segment to be read.
   int minAddr;
   // Memory size of the next segment to be read.
