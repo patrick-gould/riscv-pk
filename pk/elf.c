@@ -85,7 +85,7 @@ void load_elf(const char *fn, elf_info *info)
   mkfifo(pythonWait, 0666); // Additional pipe to avoid races
 
   // Argument vector to be passed into child process.
-  char *const argv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
+  char *const childArgv[] = {"testScript.py", fn, loader, PKWait, pythonWait, ready, terminate};
   
   // Fork child process to run python script
   int res;
